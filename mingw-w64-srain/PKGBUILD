@@ -1,0 +1,37 @@
+# Maintainer: Shengyu Zhang <la@archlinuxcn.org>
+
+_pkgname=srain
+pkgname=${MINGW_PACKAGE_PREFIX}-${_pkgname}
+pkgver=1.0.1
+pkgrel=1
+pkgdesc="Modern IRC client written in GTK. (mingw-w64)"
+arch=('i686' 'x86_64')
+license=('GPL')
+url="https://srain.im"
+depends=("${MINGW_PACKAGE_PREFIX}-gtk3"
+         "${MINGW_PACKAGE_PREFIX}-libconfig"
+         "${MINGW_PACKAGE_PREFIX}-libsoup"
+         "${MINGW_PACKAGE_PREFIX}-libsecret")
+source=("https://github.com/SrainApp/${pkgname}/archive/${pkgver}.tar.gz")
+sha256sums=('104d0b56944b9eabed9ada7bbca28df4b0dedb972e67fa533079dcf5bde35254')
+
+_prefix=${MINGW_PREFIX}
+
+build() {
+    cd ${_pkgname}
+
+    ./configure                         \
+        --prefix="${_prefix}"           \
+        --datadir="${_prefix}/share"    \
+        --sysconfdir="${_prefix}/etc"   \
+        --disable-debug
+    make clean
+    make
+}
+
+package() {
+    cd ${_pkgname}
+
+    make DESTDIR="${pkgdir}" install
+    mv "${pkgdir}/${_prefix}/bin/${_pkgname}"{,.exe}
+}
